@@ -1,0 +1,34 @@
+#!/bin/bash
+
+function updateRepo() {
+  REPO_PATH=$1
+  REPO_NAME=${REPO_PATH:0:${#REPO_PATH}-1}
+  
+  echo Updating ${REPO_NAME}...
+  cd $REPO_PATH
+  CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+  
+  echo Fetching...
+  git fetch --all --tags > /dev/null
+  
+  echo Updating ${REPO_NAME}/master...
+  git checkout master > /dev/null
+  git pull --rebase > /dev/null
+  
+  echo Updating ${REPO_NAME}/dev...
+  git checkout dev > /dev/null
+  git pull --rebase > /dev/null
+  
+  if [[ "${CURRENT_BRANCH}" != "master" && "${CURRENT_BRANCH}" != "dev" ]]; then
+    echo Updating ${REPO_NAME}/${CURRENT_BRANCH}...
+    git checkout ${CURRENT_BRANCH} > /dev/null
+    git pull --rebase > /dev/null
+  fi
+  
+  cd ..
+}
+
+for PRJ in */; do
+  updateRepo $PRJ
+  echo
+done
