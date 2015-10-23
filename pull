@@ -25,8 +25,13 @@ function updateRepo() {
     git pull --rebase > /dev/null
   fi
   
-  echo Updating npm modules...
-  npm i
+  if [[ -f package.json ]]; then
+    echo Updating npm modules...
+    npm i
+  fi
+  
+  echo Optimizing repostiory...
+  git gc
   
   cd ..
 }
